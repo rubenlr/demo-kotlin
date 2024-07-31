@@ -21,10 +21,6 @@ jobs:
         run: chmod +x ./gradlew
         working-directory: ./exchange
 
-      - name: Build with Gradle
-        run: ./gradlew build
-        working-directory: ./exchange
-
-      - name: Run tests
-        run: ./gradlew test
+      - name: Build and Test with Gradle
+        run: ./gradlew clear build test --info
         working-directory: ./exchange
