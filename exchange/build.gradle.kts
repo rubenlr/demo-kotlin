@@ -37,9 +37,10 @@ dependencies {
 	testImplementation("org.testcontainers:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+		exclude(module = "mockito-core")
 	}
-	testImplementation("org.mockito:mockito-core")
-	testImplementation("org.mockito:mockito-junit-jupiter")
+	testImplementation("com.ninja-squad:springmockk:4.0.2")
+	testImplementation("io.mockk:mockk:1.13.12")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -49,6 +50,10 @@ kotlin {
 	}
 }
 
-tasks.withType<Test> {
+tasks.test {
 	useJUnitPlatform()
+	jvmArgs(
+		"--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED",
+		"-XX:+EnableDynamicAgentLoading"
+	)
 }
