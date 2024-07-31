@@ -22,5 +22,5 @@ jobs:
         working-directory: ./exchange
 
       - name: Build and Test with Gradle
-        run: ./gradlew clear build test --info
+        run: ./gradlew clean build test --info
         working-directory: ./exchange
