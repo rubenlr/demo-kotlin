@@ -22,9 +22,5 @@ jobs:
         working-directory: ./exchange
 
       - name: Build with Gradle
-        run: ./gradlew build
-        working-directory: ./exchange
-
-      - name: Run tests
-        run: ./gradlew test
+        run: ./gradlew build --info --stacktrace
         working-directory: ./exchange

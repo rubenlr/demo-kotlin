@@ -24,6 +24,7 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -34,7 +35,12 @@ dependencies {
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:postgresql")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-test") {
+		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
+		exclude(module = "mockito-core")
+	}
+	testImplementation("com.ninja-squad:springmockk:4.0.2")
+	testImplementation("io.mockk:mockk:1.13.12")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -44,6 +50,10 @@ kotlin {
 	}
 }
 
-tasks.withType<Test> {
+tasks.test {
 	useJUnitPlatform()
+	jvmArgs(
+		"--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED",
+		"-XX:+EnableDynamicAgentLoading"
+	)
 }
