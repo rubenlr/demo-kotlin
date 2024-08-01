@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Accounts List</title>
+</head>
+<body>
+<h1>Assets and Accounts</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Asset</th>
+        <th>Type</th>
+        <th>Account Balance</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="entry : ${assetsAccount}">
+        <td th:text="${entry.key.symbol}">Asset Symbol</td>
+        <td th:text="${entry.key.type}">Asset Type</td>
+        <td th:if="${entry.value != null}" th:text="${entry.value.balance}">Balance</td>
+        <td th:if="${entry.value == null}">
+            <a th:href="@{/account/create/{userId}/asset/{assetId}(userId=${userId}, assetId=${entry.key.id})}">Create Account</a>
+        </td>
+        <td th:if="${entry.value != null}">
+            Ver transações
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

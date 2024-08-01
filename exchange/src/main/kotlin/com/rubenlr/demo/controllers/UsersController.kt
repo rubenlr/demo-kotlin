@@ -11,6 +11,7 @@ class UserController(private val userService: UserService) {
     @GetMapping("/users")
     fun listUsers(model: Model): String {
         model.addAttribute("users", userService.getAllUsers())
-        return "userList"
+        return "users/list"
     }
 }
+

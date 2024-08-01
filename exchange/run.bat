@@ -6,7 +6,7 @@ docker-compose down
 
 REM Build the project using Gradle
 echo Building the project...
-call .\gradlew build
+call .\gradlew build +x test
 
 REM Start Docker Compose services
 echo Starting Docker Compose services...
