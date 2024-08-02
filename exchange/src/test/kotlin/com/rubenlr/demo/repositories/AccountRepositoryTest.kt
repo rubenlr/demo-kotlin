@@ -1,6 +1,7 @@
 package com.rubenlr.demo.repositories
 
 import MyPostgresConfiguration
+import com.rubenlr.demo.Helper
 import com.rubenlr.demo.data.entities.Account
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -40,7 +41,7 @@ class AccountRepositoryTest : RepositoryBaseTest() {
         val savedAsset = getSavedAssets().shuffled().first()
 
         val savedAccount = accountRepository.saveAndFlush(
-            Account(user = savedUser, asset = savedAsset, balance = randomDecimal(max = 1000.0))
+            Account(user = savedUser, asset = savedAsset, balance = Helper.randomDecimal(max = 1000.0))
         )
         val foundAccount = accountRepository.findById(savedAccount.id).getOrNull()
 
@@ -66,7 +67,7 @@ class AccountRepositoryTest : RepositoryBaseTest() {
 
         val accounts = savedUsers.flatMap { user ->
             savedAsset.map { asset ->
-                Account(user = user, asset = asset, balance = randomDecimal(max = 1000.0))
+                Account(user = user, asset = asset, balance = Helper.randomDecimal(max = 1000.0))
             }
         }
         val savedAccounts = accountRepository.saveAllAndFlush(accounts)

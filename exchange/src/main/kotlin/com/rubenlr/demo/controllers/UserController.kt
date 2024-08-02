@@ -14,4 +14,3 @@ class UserController(private val userService: UserService) {
         return "users/list"
     }
 }
-

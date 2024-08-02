@@ -10,9 +10,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.math.BigDecimal
-import java.math.RoundingMode
-import kotlin.random.Random
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Testcontainers
@@ -21,8 +18,6 @@ import kotlin.random.Random
 @ContextConfiguration(classes = [MyPostgresConfiguration::class])
 open class RepositoryBaseTest {
 
-    protected fun randomDecimal(min: Double = 0.0, max: Double) =
-        BigDecimal(min + (max - min) * Random.nextDouble()).setScale(2, RoundingMode.HALF_UP)
 
     @Autowired
     protected lateinit var assetsRepository: AssetRepository
