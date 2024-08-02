@@ -4,6 +4,7 @@ plugins {
 	kotlin("plugin.jpa") version "1.9.24"
 	kotlin("jvm") version "1.9.24"
 	kotlin("plugin.spring") version "1.9.24"
+	id("com.adarshr.test-logger") version "3.0.0"
 }
 
 group = "com.rubenlr"
@@ -55,17 +56,29 @@ kotlin {
 	}
 }
 
-tasks.test {
+tasks.withType<Test> {
 	useJUnitPlatform()
 	systemProperty("spring.profiles.active", "test")
-	exclude("com/rubenlr/demo/repositories/**")
-//	include("com/rubenlr/demo/repositories/RepositoryBaseTest")
-//	include("com/rubenlr/demo/repositories/UserRepositoryTest")
-//	include("com/rubenlr/demo/repositories/AssetRepositoryTest")
-//	include("com/rubenlr/demo/repositories/AccountRepositoryTest")
 
 	jvmArgs(
 		"--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED",
 		"-XX:+EnableDynamicAgentLoading"
 	)
+
+	testLogging {
+		events("passed", "skipped", "failed")
+		exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+		showExceptions = true
+		showCauses = true
+		showStackTraces = true
+		showStandardStreams = true
+	}
+}
+
+testlogger {
+	theme = com.adarshr.gradle.testlogger.theme.ThemeType.STANDARD
+	showStandardStreams = true
+	showPassed = true
+	showSkipped = true
+	showFailed = true
 }
