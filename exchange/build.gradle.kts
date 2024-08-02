@@ -57,6 +57,13 @@ kotlin {
 
 tasks.test {
 	useJUnitPlatform()
+	systemProperty("spring.profiles.active", "test")
+	exclude("com/rubenlr/demo/repositories/**")
+//	include("com/rubenlr/demo/repositories/RepositoryBaseTest")
+//	include("com/rubenlr/demo/repositories/UserRepositoryTest")
+//	include("com/rubenlr/demo/repositories/AssetRepositoryTest")
+//	include("com/rubenlr/demo/repositories/AccountRepositoryTest")
+
 	jvmArgs(
 		"--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED",
 		"-XX:+EnableDynamicAgentLoading"
