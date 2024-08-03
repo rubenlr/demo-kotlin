@@ -5,6 +5,7 @@ import com.rubenlr.demo.FakeDataProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
@@ -17,6 +18,7 @@ import kotlin.jvm.optionals.getOrNull
 
 @ExtendWith(SpringExtension::class)
 @DataJpaTest
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
