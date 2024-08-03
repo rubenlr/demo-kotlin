@@ -2,39 +2,41 @@ package com.rubenlr.demo.services
 
 import com.rubenlr.demo.data.entities.User
 import com.rubenlr.demo.repositories.UserRepository
-import org.junit.jupiter.api.Assertions.assertEquals
+import io.mockk.MockKAnnotations
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.Mockito.*
-import org.mockito.junit.jupiter.MockitoExtension
+import kotlin.test.assertEquals
 
-@ExtendWith(MockitoExtension::class)
+@ExtendWith(MockKExtension::class)
 class UserServiceTest {
 
-    @Mock
+    @MockK
     private lateinit var userRepository: UserRepository
 
-    @InjectMocks
     private lateinit var userService: UserService
 
     private lateinit var user: User
 
     @BeforeEach
     fun setUp() {
+        MockKAnnotations.init(this)
+        userService = UserService(userRepository)
         user = User(id = 1, name = "John", email = "john@test.com")
     }
 
     @Test
     fun `should return all users`() {
         val users = listOf(user)
-        `when`(userRepository.findAll()).thenReturn(users)
+        every { userRepository.findAll() } returns users
 
         val result = userService.getAllUsers()
 
         assertEquals(users, result)
-        verify(userRepository, times(1)).findAll()
+
+        io.mockk.verify(exactly = 1) { userRepository.findAll() }
     }
 }
