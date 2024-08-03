@@ -35,9 +35,7 @@ class UserRepositoryTest {
             val foundUser = userRepository.findById(savedUser.id).getOrNull()
 
             assertNotNull(foundUser, "user not found")
-            assertEquals(savedUser.id, foundUser?.id)
-            assertEquals(savedUser.name, foundUser?.name)
-            assertEquals(savedUser.email, foundUser?.email)
+            assertEquals(savedUser, foundUser)
         }
     }
 }

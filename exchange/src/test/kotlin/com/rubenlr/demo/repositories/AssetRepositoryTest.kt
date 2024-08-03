@@ -35,8 +35,7 @@ class AssetRepositoryTest {
             val foundAsset = assetRepository.findById(asset.id).getOrNull()
 
             assertNotNull(foundAsset, "Missing asset: ${asset.symbol}")
-            assertEquals(asset.symbol, foundAsset!!.symbol)
-            assertEquals(asset.type, foundAsset.type)
+            assertEquals(asset, foundAsset)
         }
     }
 }

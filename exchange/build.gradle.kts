@@ -46,7 +46,7 @@ dependencies {
 	}
 	testImplementation("com.ninja-squad:springmockk:4.0.2")
 	testImplementation("io.mockk:mockk:1.13.12")
-	testImplementation("io.github.serpro69:kotlin-faker:1.16.0")
+	testImplementation("net.andreinc:mockneat:0.4.8")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

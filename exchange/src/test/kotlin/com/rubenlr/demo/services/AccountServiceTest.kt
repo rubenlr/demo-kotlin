@@ -39,7 +39,7 @@ class AccountServiceTest {
 
         users = FakeDataProvider.getUsers(50)
         assets = FakeDataProvider.getAssets(10)
-        accounts = FakeDataProvider.getAccounts (10, users, assets)
+        accounts = FakeDataProvider.getAccounts (users, assets).take(10)
     }
 
     @Test
