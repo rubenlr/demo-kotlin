@@ -1,6 +1,7 @@
 package com.rubenlr.demo.repositories
 
 import MyPostgresConfiguration
+import com.rubenlr.demo.FakeDataProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -20,14 +21,17 @@ import kotlin.jvm.optionals.getOrNull
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
 @ContextConfiguration(classes = [MyPostgresConfiguration::class])
-class UserRepositoryTest : RepositoryBaseTest() {
+class UserRepositoryTest {
 
     @Autowired
     private lateinit var userRepository: UserRepository
 
     @Test
     fun `should save and find user by id`() {
-        getSavedUsers().forEach { savedUser ->
+        val users = FakeDataProvider.getUsers(10)
+        userRepository.saveAllAndFlush(users)
+
+        users.forEach { savedUser ->
             val foundUser = userRepository.findById(savedUser.id).getOrNull()
 
             assertNotNull(foundUser, "user not found")
