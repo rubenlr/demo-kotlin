@@ -35,7 +35,6 @@ dependencies {
 
 	runtimeOnly("org.postgresql:postgresql")
 
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("org.testcontainers:junit-jupiter")
@@ -78,8 +77,8 @@ tasks.withType<Test> {
 
 testlogger {
 	theme = com.adarshr.gradle.testlogger.theme.ThemeType.STANDARD
-	showStandardStreams = true
-	showPassed = true
-	showSkipped = true
+	showStandardStreams = false
+	showPassed = false
+	showSkipped = false
 	showFailed = true
 }
