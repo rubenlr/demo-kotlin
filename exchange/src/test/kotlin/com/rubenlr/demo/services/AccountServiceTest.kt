@@ -6,6 +6,7 @@ import com.rubenlr.demo.data.entities.Asset
 import com.rubenlr.demo.data.entities.User
 import com.rubenlr.demo.repositories.AccountRepository
 import com.rubenlr.demo.repositories.AssetRepository
+import com.rubenlr.demo.repositories.UserRepository
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -14,8 +15,13 @@ import io.mockk.verify
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import java.math.BigDecimal
+import java.util.*
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @ExtendWith(MockKExtension::class)
 class AccountServiceTest {
@@ -26,6 +32,9 @@ class AccountServiceTest {
     @MockK
     private lateinit var assetRepository: AssetRepository
 
+    @MockK
+    private lateinit var userRepository: UserRepository
+
     private lateinit var accountService: AccountService
 
     private lateinit var accounts: List<Account>
@@ -35,11 +44,11 @@ class AccountServiceTest {
     @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
-        accountService = AccountService(accountRepository, assetRepository)
+        accountService = AccountService(accountRepository, assetRepository, userRepository)
 
         users = FakeDataProvider.getUsers(50)
         assets = FakeDataProvider.getAssets(10)
-        accounts = FakeDataProvider.getAccounts (users, assets).take(10)
+        accounts = FakeDataProvider.getAccounts(users, assets).take(10)
     }
 
     @Test
@@ -47,13 +56,13 @@ class AccountServiceTest {
         every { assetRepository.findAll() } returns assets
 
         users.forEach { user ->
-            every { accountRepository.findByUserId(user.id) } returns accounts.filter { x -> x.user.id == user.id}
+            every { accountRepository.findByUserId(user.id) } returns accounts.filter { it.user.id == user.id }
 
             val result = accountService.getAssetsWithAccounts(user.id)
             Assertions.assertEquals(assets.size, result.size)
 
             assets.forEach { asset ->
-                val expectedAccount = accounts.firstOrNull { x -> x.user.id == user.id && x.asset.id == asset.id }
+                val expectedAccount = accounts.firstOrNull { it.user.id == user.id && it.asset.id == asset.id }
                 assertEquals(expectedAccount, result.get(asset))
             }
 
@@ -61,5 +70,102 @@ class AccountServiceTest {
         }
 
         verify(exactly = users.size) { assetRepository.findAll() }
+    }
+
+    @Test
+    fun `should save new account`() {
+        val user = User(id = 1L, name = "Test User", email = "Test")
+        val asset = Asset(id = 1L, symbol = "BTC")
+        val account = Account(user = user, asset = asset, balance = BigDecimal.ZERO)
+
+        every { userRepository.findById(account.user.id) } returns Optional.of(account.user)
+        every { assetRepository.findBySymbol(account.asset.symbol) } returns Optional.of(account.asset)
+        every { accountRepository.saveAndFlush(account) } returns account
+        every { accountRepository.findByUserIdAndAssetId(user.id, asset.id) } returns Optional.empty<Account>()
+
+        val savedAccount = accountService.save(account.user.id, account.asset.symbol)
+        account.id = savedAccount.id
+
+        assertEquals(account, savedAccount)
+
+        verify(exactly = 1) { userRepository.findById(account.user.id) }
+        verify(exactly = 1) { assetRepository.findBySymbol(account.asset.symbol) }
+        verify(exactly = 1) { accountRepository.saveAndFlush(account) }
+        verify(exactly = 1) { accountRepository.findByUserIdAndAssetId(user.id, asset.id) }
+    }
+
+    private fun newId() = kotlin.random.Random.nextLong(50, 1000)
+
+    @Test
+    fun `should not save new account if it already exists`() {
+        val user = User(id = newId(), name = "Test User", email = "Test")
+        val asset = Asset(id = newId(), symbol = "BTC")
+        val account = Account(user = user, asset = asset, balance = BigDecimal.ZERO)
+
+        every { userRepository.findById(account.user.id) } returns Optional.of(account.user)
+        every { assetRepository.findBySymbol(account.asset.symbol) } returns Optional.of(account.asset)
+        every { accountRepository.saveAndFlush(account) } returns account
+        every { accountRepository.findByUserIdAndAssetId(user.id, asset.id) } returns Optional.of(account)
+
+        assertThrows<RecordAlreadyExistsException> {
+            accountService.save(user.id, asset.symbol)
+        }
+
+        verify(exactly = 1) { userRepository.findById(account.user.id) }
+        verify(exactly = 1) { assetRepository.findBySymbol(account.asset.symbol) }
+        verify(exactly = 0) { accountRepository.saveAndFlush(account) }
+        verify(exactly = 1) { accountRepository.findByUserIdAndAssetId(user.id, asset.id) }
+    }
+
+    @Test
+    fun `should not save new account if user doesn't exist`() {
+        val user = User(id = newId(), name = "Test User", email = "Test")
+        val asset = Asset(id = newId(), symbol = "BTC")
+        val account = Account(user = user, asset = asset, balance = BigDecimal.ZERO)
+
+        every { userRepository.findById(account.user.id) } returns Optional.empty() // no user
+        every { assetRepository.findBySymbol(account.asset.symbol) } returns Optional.of(account.asset)
+        every { accountRepository.saveAndFlush(account) } returns account
+        every { accountRepository.findByUserIdAndAssetId(user.id, asset.id) } returns Optional.of(account)
+
+        val exception = assertThrows<InvalidInputException> {
+            accountService.save(user.id, asset.symbol)
+        }
+
+        assertNotNull(exception.message)
+        exception.message?.let {
+            assertTrue(it.contains("User"))
+            assertTrue(it.contains(user.id.toString()))
+        }
+
+        verify(exactly = 1) { userRepository.findById(account.user.id) }
+        verify(exactly = 0) { accountRepository.saveAndFlush(account) }
+        verify(exactly = 0) { accountRepository.findByUserIdAndAssetId(user.id, asset.id) }
+    }
+
+    @Test
+    fun `should not save new account if asset doesn't exist`() {
+        val user = User(id = newId(), name = "Test User", email = "Test")
+        val asset = Asset(id = newId(), symbol = "BTC")
+        val account = Account(user = user, asset = asset, balance = BigDecimal.ZERO)
+
+        every { userRepository.findById(account.user.id) } returns Optional.of(account.user)
+        every { assetRepository.findBySymbol(account.asset.symbol) } returns Optional.empty() // no asset
+        every { accountRepository.saveAndFlush(account) } returns account
+        every { accountRepository.findByUserIdAndAssetId(user.id, asset.id) } returns Optional.of(account)
+
+        val exception = assertThrows<InvalidInputException> {
+            accountService.save(user.id, asset.symbol)
+        }
+
+        assertNotNull(exception.message)
+        exception.message?.let {
+            assertTrue(it.contains("Asset"))
+            assertTrue(it.contains(asset.symbol))
+        }
+
+        verify(exactly = 1) { assetRepository.findBySymbol(account.asset.symbol) }
+        verify(exactly = 0) { accountRepository.saveAndFlush(account) }
+        verify(exactly = 0) { accountRepository.findByUserIdAndAssetId(user.id, asset.id) }
     }
 }

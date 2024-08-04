@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import java.math.BigDecimal
-import java.util.ArrayList
 
 @Configuration
 class DataSeeder {
@@ -55,7 +54,7 @@ class DataSeeder {
     ) = ApplicationRunner {
         if (accountRepository.count() == 0L) {
             val savedUsers = userRepository.findAll()
-            val savedAssets = assetRepository.findAll()
+            val savedAssets = assetRepository.findAll().take(5)
 
             val accounts = savedUsers.flatMap { user ->
                 savedAssets.map { asset ->

@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import java.util.*
 import kotlin.random.Random
+import kotlin.test.assertNotNull
 
 @RepositoryTest
 class AccountRepositoryTest {
@@ -44,9 +46,50 @@ class AccountRepositoryTest {
     fun `should find accounts by user`() {
         users.forEach { user ->
             val actualSavedAccount = accountRepository.findByUserId(user.id)
-            val generatedAccounts = accounts.filter { x -> x.user.id == user.id }
+            val generatedAccounts = accounts.filter { it.user.id == user.id }
 
-            assertEquals(generatedAccounts, actualSavedAccount, actualSavedAccount.toString())
+            assertEquals(generatedAccounts, actualSavedAccount)
         }
+    }
+
+
+    @Test
+    fun `should not find accounts by user if user doesn't exists`() {
+        val avalilableUserId = (1L..500).find { index -> users.none { it.id == index } }
+
+        assertNotNull(avalilableUserId)
+        assertEquals(emptyList<User>(), accountRepository.findByUserId(avalilableUserId))
+    }
+
+    @Test
+    fun `should find accounts by userId and assetId`() {
+        accounts.forEach { account ->
+            val actualAccount = accountRepository.findByUserIdAndAssetId(account.user.id, account.asset.id)
+            assertEquals(Optional.of(account), actualAccount)
+        }
+    }
+
+    @Test
+    fun `should not find accounts by userId and assetId if any userId doesn't match`() {
+        val assetId = (1L..500).find { index -> users.any { it.id == index } }
+        val availableUserId =
+            (1L..500).find { index -> accounts.none { it.user.id == index } && users.any { it.id == index } }
+
+        assertNotNull(assetId)
+        assertNotNull(availableUserId)
+
+        assertEquals(Optional.empty<Account>(), accountRepository.findByUserIdAndAssetId(availableUserId, assetId))
+    }
+
+    @Test
+    fun `should not find accounts by userId and assetId if assetId doesn't match`() {
+        val userId = (1L..500).find { index -> users.any { it.id == index } }
+        val availableAssetId =
+            (1L..500).find { index -> accounts.none { it.user.id == index } && assets.any { it.id == index } }
+
+        assertNotNull(userId)
+        assertNotNull(availableAssetId)
+
+        assertEquals(Optional.empty<Account>(), accountRepository.findByUserIdAndAssetId(userId, availableAssetId))
     }
 }
