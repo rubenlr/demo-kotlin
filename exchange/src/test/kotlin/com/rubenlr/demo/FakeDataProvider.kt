@@ -4,21 +4,21 @@ import com.rubenlr.demo.data.entities.Account
 import com.rubenlr.demo.data.entities.Asset
 import com.rubenlr.demo.data.entities.AssetType
 import com.rubenlr.demo.data.entities.User
-import net.andreinc.mockneat.MockNeat
+import io.bloco.faker.Faker
 import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.random.Random
 
 object FakeDataProvider {
-    private val mockNeat = MockNeat.threadLocal()
+    private val faker = Faker()
 
-    private fun getUser(userId: Long = 1) = User(userId, mockNeat.names().first().get(), mockNeat.emails().get())
+    private fun getUser(userId: Long = 1) = User(userId, faker.name.name(), faker.internet.email())
 
     fun getUsers(size: Long = 2) = (1..size).map { userId -> getUser(userId) }
 
     private fun getAsset(assetId: Long = 1) = Asset(
         assetId,
-        (1..(3..5).random()).map { mockNeat.chars().alphaNumeric().get() }.joinToString("").uppercase(),
+        faker.company.name().filter { it.isLetterOrDigit() }.take(Random.nextInt(3, 5)).uppercase(),
         AssetType.entries.random()
     )
 
