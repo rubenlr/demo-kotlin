@@ -1,10 +1,11 @@
 package com.rubenlr.demo.controllers
 
 import com.ninjasquad.springmockk.MockkBean
-import com.rubenlr.demo.data.entities.User
+import com.rubenlr.demo.FakeDataProvider
 import com.rubenlr.demo.services.UserService
 import io.mockk.every
 import io.mockk.verify
+import org.hamcrest.Matchers.containsString
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.hamcrest.Matchers.containsString
 
 @ExtendWith(SpringExtension::class)
 @WebMvcTest(UserController::class)
@@ -28,7 +28,7 @@ class UsersControllerTest {
 
     @Test
     fun `should return OK status`() {
-        val users = listOf(User(1, "John", "john@test.com"), User(2, "Jane", "jane@test.com"))
+        val users = FakeDataProvider.getUsers(10)
         every { userService.getAllUsers() } returns users
 
         mockMvc.perform(get("/users"))

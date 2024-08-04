@@ -4,6 +4,7 @@ plugins {
 	kotlin("plugin.jpa") version "1.9.24"
 	kotlin("jvm") version "1.9.24"
 	kotlin("plugin.spring") version "1.9.24"
+	id("com.adarshr.test-logger") version "3.0.0"
 }
 
 group = "com.rubenlr"
@@ -22,15 +23,18 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("org.jetbrains.kotlin:kotlin-stdlib")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
-	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+
 	runtimeOnly("org.postgresql:postgresql")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("org.testcontainers:junit-jupiter")
@@ -41,6 +45,8 @@ dependencies {
 	}
 	testImplementation("com.ninja-squad:springmockk:4.0.2")
 	testImplementation("io.mockk:mockk:1.13.12")
+	testImplementation("net.andreinc:mockneat:0.4.8")
+
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -50,10 +56,29 @@ kotlin {
 	}
 }
 
-tasks.test {
+tasks.withType<Test> {
 	useJUnitPlatform()
+	systemProperty("spring.profiles.active", "test")
+
 	jvmArgs(
 		"--add-opens", "java.base/java.lang.reflect=ALL-UNNAMED",
 		"-XX:+EnableDynamicAgentLoading"
 	)
+
+	testLogging {
+		events("passed", "skipped", "failed")
+		exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+		showExceptions = true
+		showCauses = true
+		showStackTraces = true
+		showStandardStreams = true
+	}
+}
+
+testlogger {
+	theme = com.adarshr.gradle.testlogger.theme.ThemeType.STANDARD
+	showStandardStreams = false
+	showPassed = false
+	showSkipped = false
+	showFailed = true
 }
