@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 @RepositoryTest
@@ -39,7 +40,7 @@ class AssetRepositoryTest {
             val foundAsset = assetRepository.findBySymbol(asset.symbol)
 
             assertNotNull(foundAsset, "Missing asset: ${asset.symbol}")
-            assertEquals(asset, foundAsset)
+            assertEquals(Optional.of(asset), foundAsset)
         }
     }
 }

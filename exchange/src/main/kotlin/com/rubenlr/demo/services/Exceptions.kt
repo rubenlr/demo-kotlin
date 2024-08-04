@@ -1,6 +1,6 @@
 package com.rubenlr.demo.services
 
 open class DemoGlobalException(message: String) : Exception(message)
-open class Validation(message: String) : DemoGlobalException(message)
-class InvalidInputException(message: String) : Validation(message)
-class RecordAlreadyExistsException(message: String) : Validation(message)
+open class ValidationException(message: String) : DemoGlobalException(message)
+class InvalidInputException(message: String) : ValidationException(message)
+class RecordAlreadyExistsException(message: String) : ValidationException(message)

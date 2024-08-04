@@ -71,9 +71,10 @@ class AccountRepositoryTest {
 
     @Test
     fun `should not find accounts by userId and assetId if any userId doesn't match`() {
+        val availableUserId = (1L..500).find { n ->
+            accounts.none { it.user.id == n } && users.any { it.id == n }
+        }
         val assetId = (1L..500).find { index -> users.any { it.id == index } }
-        val availableUserId =
-            (1L..500).find { index -> accounts.none { it.user.id == index } && users.any { it.id == index } }
 
         assertNotNull(assetId)
         assertNotNull(availableUserId)
@@ -84,8 +85,9 @@ class AccountRepositoryTest {
     @Test
     fun `should not find accounts by userId and assetId if assetId doesn't match`() {
         val userId = (1L..500).find { index -> users.any { it.id == index } }
-        val availableAssetId =
-            (1L..500).find { index -> accounts.none { it.user.id == index } && assets.any { it.id == index } }
+        val availableAssetId = (1L..500).find { n ->
+            accounts.none { it.asset.id == n } && assets.any { it.id == n }
+        }
 
         assertNotNull(userId)
         assertNotNull(availableAssetId)
