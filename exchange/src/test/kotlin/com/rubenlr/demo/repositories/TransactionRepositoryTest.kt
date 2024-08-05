@@ -45,4 +45,15 @@ class TransactionRepositoryTest {
 
         assertEquals(transactions, savedTransactions)
     }
+
+    @Test
+    fun `should get transactions by userAccount`() {
+        accounts.forEach { account ->
+            val expectedTransaction = transactions.filter {
+                it.fromAccount.id == account.id || it.toAccount.id == account.id
+            }
+            val actualTransactions = transactionRepository.findAllByAccountId(account.id)
+            assertEquals(expectedTransaction, actualTransactions)
+        }
+    }
 }
