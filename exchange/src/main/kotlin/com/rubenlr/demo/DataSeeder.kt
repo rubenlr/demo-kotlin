@@ -1,17 +1,16 @@
 package com.rubenlr.demo
 
-import com.rubenlr.demo.data.entities.Account
-import com.rubenlr.demo.data.entities.Asset
-import com.rubenlr.demo.data.entities.AssetType
-import com.rubenlr.demo.data.entities.User
+import com.rubenlr.demo.data.entities.*
 import com.rubenlr.demo.repositories.AccountRepository
 import com.rubenlr.demo.repositories.AssetRepository
+import com.rubenlr.demo.repositories.TransactionRepository
 import com.rubenlr.demo.repositories.UserRepository
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import java.math.BigDecimal
+import java.time.OffsetDateTime
 
 @Configuration
 class DataSeeder {
@@ -47,7 +46,7 @@ class DataSeeder {
 
     @Bean
     @Order(3)
-    fun accountsAssets(
+    fun addAccounts(
         userRepository: UserRepository,
         assetRepository: AssetRepository,
         accountRepository: AccountRepository
@@ -66,6 +65,36 @@ class DataSeeder {
                 }
             }
             accountRepository.saveAll(accounts)
+        }
+    }
+
+    @Bean
+    @Order(4)
+    fun addDemoTransactions(
+        accountRepository: AccountRepository,
+        transactionRepository: TransactionRepository
+    ) = ApplicationRunner {
+        if (transactionRepository.count() == 0L) {
+            val accounts = accountRepository.findAll();
+            val userIds = accounts.map { it.user.id }.toHashSet()
+
+            userIds.forEach { userId ->
+                val userAccounts = accounts.filter { it.user.id == userId }
+                userAccounts.forEach { accountFrom ->
+                    // Can't transfer from to the same account
+                    userAccounts.filter { it.id != accountFrom.id }.forEach { toAccount ->
+                        val transaction = Transaction(
+                            fromAccount = accountFrom,
+                            fromValue = BigDecimal.valueOf(1.0),
+                            type = TransactionType.EXCHANGE,
+                            toAccount = toAccount,
+                            toValue = BigDecimal.valueOf(1.1),
+                            executedAt = OffsetDateTime.now()
+                        )
+                        transactionRepository.save(transaction)
+                    }
+                }
+            }
         }
     }
 }
