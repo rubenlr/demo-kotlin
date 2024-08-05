@@ -37,6 +37,37 @@
         </tr>
         </tbody>
     </table>
+    <hr/>
+    <h1 class="mt-4">Exchange</h1>
+    <form th:action="@{/exchange/{userId}(userId=${userId})}" method="post">
+        <div class="mb-3">
+            <label for="fromAccountId" class="form-label">From:</label>
+            <select id="fromAccountId" name="fromAccountId" class="form-select" required>
+                <option th:each="entry : ${assetsAccount}"
+                        th:if="${entry.value != null}"
+                        th:value="${entry.key.id}"
+                        th:text="${entry.key.symbol}">
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="toAccountId" class="form-label">To:</label>
+            <select id="toAccountId" name="toAccountId" class="form-select" required>
+                <option th:each="entry : ${assetsAccount}"
+                        th:if="${entry.value != null}"
+                        th:value="${entry.key.id}"
+                        th:text="${entry.key.symbol}">
+                </option>
+            </select></div>
+
+        <div class="mb-3">
+            <label for="value" class="form-label">Value:</label>
+            <input type="number" id="value" name="value" class="form-control" required><br>
+        </div>
+
+        <button type="submit" class="btn btn-primary pull-right">Exchange</button>
+    </form>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"

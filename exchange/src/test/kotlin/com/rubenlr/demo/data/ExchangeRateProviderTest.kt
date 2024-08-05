@@ -5,13 +5,13 @@ import java.math.BigDecimal
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class TransactionRateProviderTest {
+class ExchangeRateProviderTest {
 
-    private lateinit var rateProvider: TransactionRateProvider
+    private lateinit var rateProvider: ExchangeRateProvider
 
     @BeforeEach
     fun setUp() {
-        rateProvider = TransactionRateProvider()
+        rateProvider = ExchangeRateProvider()
     }
 
     @Test

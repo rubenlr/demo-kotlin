@@ -20,7 +20,7 @@ class AssetRepositoryTest {
 
     @BeforeEach
     fun setUp() {
-        val assetList = FakeDataProvider.getAssets(10)
+        val assetList = FakeDataProvider.getAssets(10).toHashSet()
         assets = assetRepository.saveAllAndFlush(assetList)
     }
 

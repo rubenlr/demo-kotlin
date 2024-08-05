@@ -8,7 +8,7 @@ data class Asset(
     @Id
     var id: Long = 0,
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, unique = true)
     var symbol: String,
 
     @Enumerated(EnumType.STRING)

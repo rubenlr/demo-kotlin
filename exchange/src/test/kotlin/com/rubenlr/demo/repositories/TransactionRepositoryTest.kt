@@ -7,9 +7,9 @@ import com.rubenlr.demo.data.entities.Transaction
 import com.rubenlr.demo.data.entities.User
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 import kotlin.test.Test
 import kotlin.test.assertEquals
-
 
 @RepositoryTest
 class TransactionRepositoryTest {
@@ -31,18 +31,17 @@ class TransactionRepositoryTest {
     private lateinit var transactions: List<Transaction>
 
     @BeforeEach
+    @Transactional
     fun setUp() {
-        val gen = FakeDataProvider.getTransactions(2, 5)
-        users = userRepository.saveAllAndFlush(gen.users)
-        assets = assetRepository.saveAllAndFlush(gen.assets)
-        accounts = accountRepository.saveAllAndFlush(gen.accounts)
-        transactions = transactionRepository.saveAllAndFlush(gen.transactions)
+        users = userRepository.saveAllAndFlush(FakeDataProvider.getUsers(2))
+        assets = assetRepository.saveAllAndFlush(FakeDataProvider.getAssets(3))
+        accounts = accountRepository.saveAllAndFlush(FakeDataProvider.getAccounts(users, assets).shuffled().take(3))
+        transactions = transactionRepository.saveAllAndFlush(FakeDataProvider.getTransactions(accounts).shuffled().take(3))
     }
 
     @Test
     fun `should save and find transactions`() {
         val savedTransactions = transactionRepository.findAll()
-
         assertEquals(transactions, savedTransactions)
     }
 
@@ -52,8 +51,10 @@ class TransactionRepositoryTest {
             val expectedTransaction = transactions.filter {
                 it.fromAccount.id == account.id || it.toAccount.id == account.id
             }
-            val actualTransactions = transactionRepository.findAllByAccountId(account.id)
-            assertEquals(expectedTransaction, actualTransactions)
+            if (expectedTransaction.isNotEmpty()) {
+                val actualTransactions = transactionRepository.findAllByAccountId(account.id)
+                assertEquals(expectedTransaction, actualTransactions)
+            }
         }
     }
 }

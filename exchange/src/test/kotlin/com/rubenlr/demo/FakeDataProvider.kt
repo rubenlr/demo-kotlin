@@ -10,7 +10,7 @@ import kotlin.random.Random
 object FakeDataProvider {
     private val faker = Faker()
 
-    private fun nextDecimal(min: Double = 1.0, max: Double = 10000.0) =
+    private fun randomDecimal(min: Double = 1.0, max: Double = 10000.0) =
         BigDecimal.valueOf(Random.nextDouble(min, max)).setScale(2, RoundingMode.HALF_UP)
 
     private fun getUser(userId: Long = 1) = User(userId, faker.name.name(), faker.internet.email())
@@ -23,10 +23,10 @@ object FakeDataProvider {
         AssetType.entries.random()
     )
 
-    fun getAssets(size: Long = 2) = (1..size).map { assetId -> getAsset(assetId) }
+    fun getAssets(size: Long = 2) = (1..size + 50).map { assetId -> getAsset(assetId) }.toHashSet().take(size.toInt())
 
     private fun getAccount(user: User, asset: Asset, accountId: Long = 1L) =
-        Account(accountId, user, asset, nextDecimal())
+        Account(accountId, user, asset, randomDecimal())
 
     fun getAccounts(users: List<User>, assets: List<Asset>): List<Account> {
         val userAssetList = users.flatMap { user -> assets.map { asset -> user to asset } }.toSet().shuffled()
@@ -41,10 +41,10 @@ object FakeDataProvider {
         Transaction(
             transactionId,
             from,
-            nextDecimal(),
+            randomDecimal(),
             TransactionType.EXCHANGE,
             to,
-            nextDecimal(),
+            randomDecimal(),
             OffsetDateTime.now()
         )
 
@@ -62,21 +62,5 @@ object FakeDataProvider {
         }
 
         return transactions
-    }
-
-    data class TransactionDto(
-        val users: List<User>,
-        val assets: List<Asset>,
-        val accounts: List<Account>,
-        val transactions: List<Transaction>
-    )
-
-    fun getTransactions(usersSize: Long, assetsSize: Long): TransactionDto {
-        val users = getUsers(usersSize)
-        val assets = getAssets(assetsSize)
-        val accounts = getAccounts(users, assets)
-        val transactions = getTransactions(accounts)
-
-        return TransactionDto(users, assets, accounts, transactions)
     }
 }

@@ -2,10 +2,12 @@ package com.rubenlr.demo.data
 
 import com.rubenlr.demo.data.entities.TransactionRate
 import com.rubenlr.demo.services.ValidationException
+import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.math.MathContext
 
-class TransactionRateProvider {
+@Component
+class ExchangeRateProvider {
     private val rates = listOf(
         TransactionRate("EURO", "BTC", BigDecimal.valueOf(0.00001873)),
         TransactionRate("EURO", "ETH", BigDecimal.valueOf(0.0004046)),

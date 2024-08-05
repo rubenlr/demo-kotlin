@@ -30,9 +30,9 @@ class AccountRepositoryTest {
 
     @BeforeEach
     fun setUp() {
-        users = userRepository.saveAllAndFlush(FakeDataProvider.getUsers(Random.nextLong(5, 7)))
-        assets = assetRepository.saveAllAndFlush(FakeDataProvider.getAssets(Random.nextLong(5, 7)))
-        val savedAccounts = FakeDataProvider.getAccounts(users, assets).take(5)
+        users = userRepository.saveAllAndFlush(FakeDataProvider.getUsers(Random.nextLong(6, 8)))
+        assets = assetRepository.saveAllAndFlush(FakeDataProvider.getAssets(Random.nextLong(6, 8)))
+        val savedAccounts = FakeDataProvider.getAccounts(users, assets).shuffled().take(2)
         accounts = accountRepository.saveAllAndFlush(savedAccounts)
     }
 
@@ -52,13 +52,12 @@ class AccountRepositoryTest {
         }
     }
 
-
     @Test
     fun `should not find accounts by user if user doesn't exists`() {
-        val avalilableUserId = (1L..500).find { index -> users.none { it.id == index } }
+        val availableUserId = (1L..500).find { index -> users.none { it.id == index } }
 
-        assertNotNull(avalilableUserId)
-        assertEquals(emptyList<User>(), accountRepository.findByUserId(avalilableUserId))
+        assertNotNull(availableUserId)
+        assertEquals(emptyList<User>(), accountRepository.findByUserId(availableUserId))
     }
 
     @Test
@@ -72,7 +71,7 @@ class AccountRepositoryTest {
     @Test
     fun `should not find accounts by userId and assetId if any userId doesn't match`() {
         val userWithoutAccount = users.find { user -> accounts.none { it.user.id == user.id } }
-        val assetId = (1L..500).find { index -> users.any { it.id == index } }
+        val assetId = (10L..500).find { index -> users.any { it.id == index } }
 
         assertNotNull(assetId)
         assertNotNull(userWithoutAccount)
@@ -85,7 +84,7 @@ class AccountRepositoryTest {
 
     @Test
     fun `should not find accounts by userId and assetId if assetId doesn't match`() {
-        val userId = (1L..500).find { index -> users.any { it.id == index } }
+        val userId = (10L..500).find { index -> users.any { it.id == index } }
         val assetWithoutAccount = assets.find { asset -> accounts.none { it.asset.id == asset.id } }
 
         assertNotNull(userId)

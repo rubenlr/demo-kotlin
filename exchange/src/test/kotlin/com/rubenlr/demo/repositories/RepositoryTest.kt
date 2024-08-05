@@ -13,6 +13,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @Retention(AnnotationRetention.RUNTIME)
 @ExtendWith(SpringExtension::class)
 @DataJpaTest
+//@Transactional
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
