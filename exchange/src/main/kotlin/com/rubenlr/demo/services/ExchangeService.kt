@@ -1,6 +1,7 @@
 package com.rubenlr.demo.services
 
 import com.rubenlr.demo.data.ExchangeRateProvider
+import com.rubenlr.demo.data.ExchangeResultDto
 import com.rubenlr.demo.data.entities.Transaction
 import com.rubenlr.demo.data.entities.TransactionType
 import com.rubenlr.demo.repositories.AccountRepository
@@ -17,7 +18,7 @@ class ExchangeService(
     private val exchangeRateProvider: ExchangeRateProvider
 ){
     @Transactional
-    fun exchange(fromAccountId: Long, toAccountId: Long, value: BigDecimal) {
+    fun exchange(fromAccountId: Long, toAccountId: Long, value: BigDecimal) : ExchangeResultDto {
         val from = accountRepository.findById(fromAccountId)
             .orElseThrow { throw InvalidInputException("[from] Account $fromAccountId not found") }
         val to = accountRepository.findById(toAccountId)
@@ -43,5 +44,7 @@ class ExchangeService(
 
         accountRepository.saveAll(listOf(from, to))
         transactionRepository.save(transaction)
+
+        return ExchangeResultDto("$value ${from.asset.symbol} was successfully converted into $convertedValue ${to.asset.symbol}")
     }
 }

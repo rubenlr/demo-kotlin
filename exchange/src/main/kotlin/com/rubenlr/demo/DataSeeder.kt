@@ -32,13 +32,13 @@ class DataSeeder {
     fun initializeAssets(assetRepository: AssetRepository) = ApplicationRunner {
         if (assetRepository.count() == 0L) {
             val assets = listOf(
-                Asset(1, "EURO", AssetType.FIAT),
-                Asset(2, "BTC", AssetType.CRYPTO),
-                Asset(3, "ETH", AssetType.CRYPTO),
-                Asset(4, "Apple", AssetType.STOCK),
-                Asset(5, "Tesla", AssetType.STOCK),
-                Asset(6, "GOLD", AssetType.COMMODITIES),
-                Asset(7, "SILVER", AssetType.COMMODITIES),
+                Asset(1, Symbol.EURO, AssetType.FIAT),
+                Asset(2, Symbol.BTC, AssetType.CRYPTO),
+                Asset(3, Symbol.ETH, AssetType.CRYPTO),
+                Asset(4, Symbol.Apple, AssetType.STOCK),
+                Asset(5, Symbol.Tesla, AssetType.STOCK),
+                Asset(6, Symbol.Gold, AssetType.COMMODITIES),
+                Asset(7, Symbol.Silver, AssetType.COMMODITIES),
             )
             assetRepository.saveAll(assets)
         }
@@ -60,7 +60,7 @@ class DataSeeder {
                     Account(
                         user = user,
                         asset = asset,
-                        balance = if (asset.symbol == "EURO") BigDecimal.valueOf(1000) else BigDecimal.ZERO
+                        balance = if (asset.symbol == Symbol.EURO) BigDecimal.valueOf(100000) else BigDecimal.ZERO
                     )
                 }
             }

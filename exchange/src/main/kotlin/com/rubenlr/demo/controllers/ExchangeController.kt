@@ -21,8 +21,8 @@ class ExchangeController(private val exchangeService: ExchangeService) {
         @RequestParam value: BigDecimal,
         redirectAttributes: RedirectAttributes
     ): String {
-        exchangeService.exchange(fromAccountId, toAccountId, value)
-        redirectAttributes.addFlashAttribute("message", "Exchange successful")
+        val result = exchangeService.exchange(fromAccountId, toAccountId, value)
+        redirectAttributes.addFlashAttribute("exchangeResult", result)
         return "redirect:/accounts/$userId"
     }
 }

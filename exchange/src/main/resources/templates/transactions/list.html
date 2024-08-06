@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Accounts List</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-4">Transactions for account</h1>
+    <h2 th:if="${account != null}" th:text="${account.asset.symbol + ' - Balance: ' + account.balance}"></h2>
+    <div class="table-responsive">
+        <table class="table table-striped mt-3">
+            <thead>
+            <tr>
+                <th>When</th>
+                <th>FROM</th>
+                <th>TO</th>
+                <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="entry : ${transactions}"
+                th:classappend="${account != null and account.asset.symbol == entry.toAccount.asset.symbol} ? 'table-danger' : 'table-primary'">
+                <td th:text="${#temporals.format(entry.executedAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td th:text="${entry.fromAccount.asset.symbol}"></td>
+                <td th:text="${entry.toAccount.asset.symbol}"></td>
+                <td>
+                <span th:if="${account.asset.symbol == entry.fromAccount.asset.symbol}"
+                      th:text="${entry.fromValue}"></span>
+                    <span th:if="${account.asset.symbol == entry.toAccount.asset.symbol}"
+                          th:text="${-entry.toValue}"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <a th:if="${account != null}" th:href="@{/accounts/{userId}(userId=${account.user.id})}" class="btn btn-primary">Back to accounts</a>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+</html>

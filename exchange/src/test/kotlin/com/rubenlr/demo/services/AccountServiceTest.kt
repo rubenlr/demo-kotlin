@@ -1,9 +1,7 @@
 package com.rubenlr.demo.services
 
 import com.rubenlr.demo.FakeDataProvider
-import com.rubenlr.demo.data.entities.Account
-import com.rubenlr.demo.data.entities.Asset
-import com.rubenlr.demo.data.entities.User
+import com.rubenlr.demo.data.entities.*
 import com.rubenlr.demo.repositories.AccountRepository
 import com.rubenlr.demo.repositories.AssetRepository
 import com.rubenlr.demo.repositories.UserRepository
@@ -75,7 +73,7 @@ class AccountServiceTest {
     @Test
     fun `should save new account`() {
         val user = User(id = 1L, name = "Test User", email = "Test")
-        val asset = Asset(id = 1L, symbol = "BTC")
+        val asset = Asset(id = 1L, symbol = Symbol.BTC, type = AssetType.CRYPTO)
         val account = Account(user = user, asset = asset, balance = BigDecimal.ZERO)
 
         every { userRepository.findById(account.user.id) } returns Optional.of(account.user)
@@ -99,7 +97,7 @@ class AccountServiceTest {
     @Test
     fun `should not save new account if it already exists`() {
         val user = User(id = newId(), name = "Test User", email = "Test")
-        val asset = Asset(id = newId(), symbol = "BTC")
+        val asset = Asset(id = newId(), symbol = Symbol.BTC, type = AssetType.CRYPTO)
         val account = Account(user = user, asset = asset, balance = BigDecimal.ZERO)
 
         every { userRepository.findById(account.user.id) } returns Optional.of(account.user)
@@ -120,7 +118,7 @@ class AccountServiceTest {
     @Test
     fun `should not save new account if user doesn't exist`() {
         val user = User(id = newId(), name = "Test User", email = "Test")
-        val asset = Asset(id = newId(), symbol = "BTC")
+        val asset = Asset(id = newId(), symbol = Symbol.BTC, type = AssetType.CRYPTO)
         val account = Account(user = user, asset = asset, balance = BigDecimal.ZERO)
 
         every { userRepository.findById(account.user.id) } returns Optional.empty() // no user
@@ -146,7 +144,7 @@ class AccountServiceTest {
     @Test
     fun `should not save new account if asset doesn't exist`() {
         val user = User(id = newId(), name = "Test User", email = "Test")
-        val asset = Asset(id = newId(), symbol = "BTC")
+        val asset = Asset(id = newId(), symbol = Symbol.BTC, type = AssetType.CRYPTO)
         val account = Account(user = user, asset = asset, balance = BigDecimal.ZERO)
 
         every { userRepository.findById(account.user.id) } returns Optional.of(account.user)
@@ -161,7 +159,7 @@ class AccountServiceTest {
         assertNotNull(exception.message)
         exception.message?.let {
             assertTrue(it.contains("Asset"))
-            assertTrue(it.contains(asset.symbol))
+            assertTrue(it.contains(asset.symbol.name))
         }
 
         verify(exactly = 1) { assetRepository.findBySymbol(account.asset.symbol) }

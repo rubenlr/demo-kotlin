@@ -57,7 +57,7 @@ class AccountControllerTest {
         val resultActions = mockMvc.perform(get("/accounts/${userId}")).andExpect(status().isOk)
 
         assets.forEach { asset ->
-            resultActions.andExpect(content().string(containsString(asset.symbol)))
+            resultActions.andExpect(content().string(containsString(asset.symbol.name)))
         }
 
         verify(exactly = 1) { accountService.getAssetsWithAccounts(userId) }

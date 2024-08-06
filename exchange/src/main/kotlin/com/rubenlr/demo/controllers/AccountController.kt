@@ -1,5 +1,6 @@
 package com.rubenlr.demo.controllers
 
+import com.rubenlr.demo.data.entities.Symbol
 import com.rubenlr.demo.services.AccountService
 import com.rubenlr.demo.services.ValidationException
 import org.springframework.stereotype.Controller
@@ -27,7 +28,7 @@ class AccountController(private val accountService: AccountService) {
         redirectAttributes: RedirectAttributes
     ): String {
         try {
-            accountService.save(userId, symbol)
+            accountService.save(userId, Symbol.entries.first { it.name == symbol })
         } catch (e: ValidationException) {
             redirectAttributes.addFlashAttribute("errorMessage", e.message)
         }

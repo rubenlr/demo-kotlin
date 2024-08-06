@@ -2,6 +2,7 @@ package com.rubenlr.demo.services
 
 import com.rubenlr.demo.data.entities.Asset
 import com.rubenlr.demo.data.entities.AssetType
+import com.rubenlr.demo.data.entities.Symbol
 import com.rubenlr.demo.repositories.AssetRepository
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -27,7 +28,7 @@ class AssetServiceTest {
     fun setUp() {
         MockKAnnotations.init(this)
         assetService = AssetService(assetRepository)
-        assets = listOf(Asset(1, "BTC", AssetType.CRYPTO), Asset(2, "ETH", AssetType.CRYPTO))
+        assets = listOf(Asset(1, Symbol.BTC, AssetType.CRYPTO), Asset(2, Symbol.ETH, AssetType.CRYPTO))
     }
 
     @Test

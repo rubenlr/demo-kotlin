@@ -19,11 +19,11 @@ object FakeDataProvider {
 
     private fun getAsset(assetId: Long = 1) = Asset(
         assetId,
-        faker.company.name().filter { it.isLetterOrDigit() }.take(Random.nextInt(3, 5)).uppercase(),
+        Symbol.entries.get(assetId.toInt() - 1),
         AssetType.entries.random()
     )
 
-    fun getAssets(size: Long = 2) = (1..size + 50).map { assetId -> getAsset(assetId) }.toHashSet().take(size.toInt())
+    fun getAssets(size: Long = 2) = (1..7L).map { assetId -> getAsset(assetId) }.take(size.toInt())
 
     private fun getAccount(user: User, asset: Asset, accountId: Long = 1L) =
         Account(accountId, user, asset, randomDecimal())
