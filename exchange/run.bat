@@ -8,7 +8,7 @@ docker-compose down
 
 REM Build the project using Gradle
 echo Building the project...
-call .\gradlew clean build -x test
+call .\gradlew clean build
 
 REM Check if the build was successful
 if %ERRORLEVEL% NEQ 0 (
