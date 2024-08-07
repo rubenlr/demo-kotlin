@@ -1,5 +1,15 @@
 # Coding challange
 
+## Guide
+
+To build and run, use:
+
+    ./run.sh
+
+To build only use:
+
+    ./gradlew build
+
 ## Task
 
 For this task you need to use Spring Boot with Kotlin and Postgres database as this is our main

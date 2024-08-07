@@ -8,18 +8,28 @@ data class Asset(
     @Id
     var id: Long = 0,
 
-    @Column(nullable = false, length = 50)
-    var symbol: String,
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    var symbol: Symbol,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var type: AssetType = AssetType.NONE
+    var type: AssetType
 )
 
 enum class AssetType {
-    NONE,
     FIAT,
     CRYPTO,
     STOCK,
     COMMODITIES
+}
+
+enum class Symbol {
+    EURO,
+    BTC,
+    ETH,
+    Apple,
+    Tesla,
+    Gold,
+    Silver
 }

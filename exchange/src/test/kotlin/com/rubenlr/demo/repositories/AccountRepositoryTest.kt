@@ -30,9 +30,9 @@ class AccountRepositoryTest {
 
     @BeforeEach
     fun setUp() {
-        users = userRepository.saveAllAndFlush(FakeDataProvider.getUsers(Random.nextLong(5, 7)))
-        assets = assetRepository.saveAllAndFlush(FakeDataProvider.getAssets(Random.nextLong(5, 7)))
-        val savedAccounts = FakeDataProvider.getAccounts(users, assets).take(5)
+        users = userRepository.saveAllAndFlush(FakeDataProvider.getUsers(Random.nextLong(6, 8)))
+        assets = assetRepository.saveAllAndFlush(FakeDataProvider.getAssets(Random.nextLong(6, 8)))
+        val savedAccounts = FakeDataProvider.getAccounts(users, assets).shuffled().take(2)
         accounts = accountRepository.saveAllAndFlush(savedAccounts)
     }
 
@@ -52,13 +52,12 @@ class AccountRepositoryTest {
         }
     }
 
-
     @Test
     fun `should not find accounts by user if user doesn't exists`() {
-        val avalilableUserId = (1L..500).find { index -> users.none { it.id == index } }
+        val availableUserId = (1L..500).find { index -> users.none { it.id == index } }
 
-        assertNotNull(avalilableUserId)
-        assertEquals(emptyList<User>(), accountRepository.findByUserId(avalilableUserId))
+        assertNotNull(availableUserId)
+        assertEquals(emptyList<User>(), accountRepository.findByUserId(availableUserId))
     }
 
     @Test
@@ -71,27 +70,29 @@ class AccountRepositoryTest {
 
     @Test
     fun `should not find accounts by userId and assetId if any userId doesn't match`() {
-        val availableUserId = (1L..500).find { n ->
-            accounts.none { it.user.id == n } && users.any { it.id == n }
-        }
-        val assetId = (1L..500).find { index -> users.any { it.id == index } }
+        val userWithoutAccount = users.find { user -> accounts.none { it.user.id == user.id } }
+        val assetId = (10L..500).find { index -> users.any { it.id == index } }
 
         assertNotNull(assetId)
-        assertNotNull(availableUserId)
+        assertNotNull(userWithoutAccount)
 
-        assertEquals(Optional.empty<Account>(), accountRepository.findByUserIdAndAssetId(availableUserId, assetId))
+        assertEquals(
+            Optional.empty<Account>(),
+            accountRepository.findByUserIdAndAssetId(userWithoutAccount.id, assetId)
+        )
     }
 
     @Test
     fun `should not find accounts by userId and assetId if assetId doesn't match`() {
-        val userId = (1L..500).find { index -> users.any { it.id == index } }
-        val availableAssetId = (1L..500).find { n ->
-            accounts.none { it.asset.id == n } && assets.any { it.id == n }
-        }
+        val userId = (10L..500).find { index -> users.any { it.id == index } }
+        val assetWithoutAccount = assets.find { asset -> accounts.none { it.asset.id == asset.id } }
 
         assertNotNull(userId)
-        assertNotNull(availableAssetId)
+        assertNotNull(assetWithoutAccount)
 
-        assertEquals(Optional.empty<Account>(), accountRepository.findByUserIdAndAssetId(userId, availableAssetId))
+        assertEquals(
+            Optional.empty<Account>(),
+            accountRepository.findByUserIdAndAssetId(userId, assetWithoutAccount.id)
+        )
     }
 }

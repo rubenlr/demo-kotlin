@@ -10,6 +10,6 @@ class HomeController {
     @GetMapping("/")
     fun home(model: Model): String {
         model.addAttribute("message", "Hello, World!")
-        return "home"
+        return "redirect:/users"
     }
 }
