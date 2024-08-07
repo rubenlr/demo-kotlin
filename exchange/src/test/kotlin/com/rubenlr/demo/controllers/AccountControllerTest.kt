@@ -6,7 +6,6 @@ import com.rubenlr.demo.data.entities.Account
 import com.rubenlr.demo.data.entities.Asset
 import com.rubenlr.demo.data.entities.User
 import com.rubenlr.demo.services.AccountService
-import com.rubenlr.demo.services.UserService
 import com.rubenlr.demo.services.ValidationException
 import io.mockk.every
 import io.mockk.verify
@@ -28,9 +27,6 @@ class AccountControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
-
-    @MockkBean
-    private lateinit var userService: UserService
 
     @MockkBean
     private lateinit var accountService: AccountService

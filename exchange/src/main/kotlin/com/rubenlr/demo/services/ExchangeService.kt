@@ -30,6 +30,10 @@ class ExchangeService(
 
         val rate = exchangeRateProvider.getRate(from.asset.symbol, to.asset.symbol)
         val convertedValue = value.multiply(rate)
+
+        from.balance = from.balance.subtract(value)
+        to.balance = to.balance.add(convertedValue)
+
         val transaction = Transaction(
             fromAccount = from,
             fromValue = value,
@@ -38,9 +42,6 @@ class ExchangeService(
             toValue = convertedValue,
             executedAt = OffsetDateTime.now()
         )
-
-        from.balance = from.balance.subtract(value)
-        to.balance = to.balance.add(convertedValue)
 
         accountRepository.saveAll(listOf(from, to))
         transactionRepository.save(transaction)
